@@ -203,7 +203,7 @@ public class MainActivity extends Activity {
             p.setStyle(Paint.Style.FILL);p.setColor(TICKER);c.drawRect(l,t,r,b,p);
             c.save();c.clipRect(l,t,r,b);
             String s="Документ оновлено о 15:47 | 17.09.2026 • ";
-            p.setTypeface(Typeface.create("sans-serif-medium",Typeface.BOLD));p.setTextSize(22);p.setTextScaleX(1.01f);p.setColor(Color.WHITE);
+            p.setTypeface(medium);p.setTextSize(22);p.setTextScaleX(1.0f);p.setColor(Color.WHITE);
             float sw=p.measureText(s), off=-(tickerOffset%sw);
             c.drawText(s,off,t+30,p);c.drawText(s,off+sw,t+30,p);c.drawText(s,off+2*sw,t+30,p);p.setTextScaleX(1f);
             c.restore();
@@ -214,16 +214,16 @@ public class MainActivity extends Activity {
             p.setColor(Color.rgb(160,159,148));p.setStyle(Paint.Style.FILL);c.drawRect(0,0,W,112,p);
             p.setColor(BG);c.drawRoundRect(0,110,W,1600,38,38,p);
             round(c,309,136,376,143,4,Color.BLACK);
-            drawDemoPill(c,157);
+            drawDemoPill(c,158);
 
             c.save();
             c.translate(0,-detailsScroll);
 
-            text(c,"Резерв ID",42,263,50,Color.BLACK,regular);
+            text(c,"Резерв ID",42,263,50,Color.BLACK,medium);
             drawReferenceTrident(c,579,210,59,70);
             drawTicker(c,0,319,684,361);
 
-            round(c,40,401,644,817,26,Color.WHITE);
+            round(c,40,402,644,817,26,Color.WHITE);
             textFio(c,"ТЕЛЬНИХ",67,462,37);
             textFio(c,"СВЯТОСЛАВ",67,502,37);
             textFio(c,"Олександрович",67,542,37);
@@ -233,10 +233,11 @@ public class MainActivity extends Activity {
             text(c,"РНОКПП:",67,744,27,Color.BLACK,medium);
             text(c,"0000000000",67,787,27,Color.BLACK,regular);
 
-            round(c,40,829,644,1430,26,Color.WHITE);
+            round(c,40,830,644,1429,26,Color.WHITE);
             text(c,"ТЦК та СП:",67,881,26,Color.BLACK,medium);
-            text(c,"Демонстраційний районний ТЦК та СП",67,922,24,Color.BLACK,regular);
-            line(c,40,980,644,980,Color.rgb(225,223,214),1);
+            text(c,"Демонстраційний районний у місті",67,922,24,Color.BLACK,regular);
+            text(c,"Дніпро ТЦК та СП",67,949,24,Color.BLACK,regular);
+            line(c,40,981,644,981,Color.rgb(225,223,214),1);
             text(c,"Звання",67,1031,25,Color.BLACK,regular);
             text(c,"Солдат",397,1031,25,Color.BLACK,regular);
             text(c,"ВОС:",67,1083,25,Color.BLACK,regular);
@@ -246,12 +247,12 @@ public class MainActivity extends Activity {
             text(c,"Потребує проходження базової",67,1235,23,Color.BLACK,regular);
             text(c,"загальновійськової підготовки, Солдат",67,1264,23,Color.BLACK,regular);
             text(c,"резерву",67,1293,23,Color.BLACK,regular);
-            text(c,"Номер в реєстрі Оберіг:",67,1345,24,Color.BLACK,medium);
-            text(c,"DEMO-000000000000",67,1388,24,Color.BLACK,regular);
+            text(c,"Номер в реєстрі Оберіг:",67,1344,24,Color.BLACK,medium);
+            text(c,"DEMO-000000000000",67,1387,24,Color.BLACK,regular);
 
-            round(c,40,1444,644,1605,26,Color.WHITE);
-            text(c,"Телефон:",67,1496,26,Color.BLACK,medium);
-            text(c,"+380 00 000 00 00",67,1540,25,Color.BLACK,regular);
+            round(c,40,1443,644,1605,26,Color.WHITE);
+            text(c,"Телефон:",67,1493,26,Color.BLACK,medium);
+            text(c,"+380 00 000 00 00",67,1535,25,Color.BLACK,regular);
 
             c.restore();
         }
@@ -394,32 +395,19 @@ public class MainActivity extends Activity {
         void drawReferenceTitle(Canvas c,float x,float y,float w,float h){
             // Tuned against the user's 684x1536 reference: slightly narrower and lighter than Android default.
             c.save();
-            c.scale(0.945f,1f,x,y);
-            text(c,"Резерв ID",x,y+31,39,Color.BLACK,regular);
+            c.scale(0.955f,1f,x,y);
+            text(c,"Резерв ID",x,y+31,39,Color.BLACK,medium);
             c.restore();
         }
 
         void drawReferenceTrident(Canvas c,float x,float y,float w,float h){
-            // Shield + trident proportions traced from the supplied screenshot.
-            Path sh=new Path();
-            sh.moveTo(x,y); sh.lineTo(x+w,y); sh.lineTo(x+w,y+h*.63f);
-            sh.quadTo(x+w*.92f,y+h*.82f,x+w*.50f,y+h);
-            sh.quadTo(x+w*.08f,y+h*.82f,x,y+h*.63f); sh.close();
-            p.setStyle(Paint.Style.FILL); p.setColor(Color.BLACK); c.drawPath(sh,p);
-
-            p.setColor(Color.rgb(225,222,203));
-            p.setStyle(Paint.Style.STROKE); p.setStrokeWidth(5.2f); p.setStrokeCap(Paint.Cap.ROUND); p.setStrokeJoin(Paint.Join.ROUND);
-            float cx=x+w*.5f;
-            Path t=new Path();
-            t.moveTo(cx,y+h*.72f); t.lineTo(cx,y+h*.27f);
-            t.moveTo(cx,y+h*.39f); t.cubicTo(cx-w*.13f,y+h*.31f,cx-w*.18f,y+h*.22f,cx-w*.18f,y+h*.10f);
-            t.moveTo(cx,y+h*.39f); t.cubicTo(cx+w*.13f,y+h*.31f,cx+w*.18f,y+h*.22f,cx+w*.18f,y+h*.10f);
-            t.moveTo(cx-w*.18f,y+h*.10f); t.lineTo(cx-w*.18f,y+h*.58f);
-            t.moveTo(cx+w*.18f,y+h*.10f); t.lineTo(cx+w*.18f,y+h*.58f);
-            t.moveTo(cx-w*.18f,y+h*.58f); t.quadTo(cx-w*.08f,y+h*.67f,cx,y+h*.72f);
-            t.moveTo(cx+w*.18f,y+h*.58f); t.quadTo(cx+w*.08f,y+h*.67f,cx,y+h*.72f);
-            c.drawPath(t,p);
-            p.setStyle(Paint.Style.FILL);
+            if(trident==null) return;
+            Rect src=new Rect(0,0,trident.getWidth(),trident.getHeight());
+            RectF dst=new RectF(x,y,x+w,y+h);
+            p.setAlpha(255);
+            p.setFilterBitmap(true);
+            c.drawBitmap(trident,src,dst,p);
+            p.setFilterBitmap(false);
         }
 
         void drawChevron(Canvas c,float x,float y){
@@ -431,7 +419,7 @@ public class MainActivity extends Activity {
             p.setStyle(Paint.Style.FILL);p.setTypeface(tf);p.setTextSize(size);p.setTextScaleX(1f);p.setColor(color);p.setStrokeWidth(1);c.drawText(s,x,base,p);
         }
         void textFio(Canvas c,String s,float x,float base,float size){
-            p.setStyle(Paint.Style.FILL);p.setTypeface(regular);p.setTextSize(size);p.setTextScaleX(1.065f);p.setColor(Color.BLACK);p.setStrokeWidth(1);
+            p.setStyle(Paint.Style.FILL);p.setTypeface(medium);p.setTextSize(size);p.setTextScaleX(1.045f);p.setColor(Color.BLACK);p.setStrokeWidth(1);
             c.drawText(s,x,base,p);
             p.setTextScaleX(1f);
         }
