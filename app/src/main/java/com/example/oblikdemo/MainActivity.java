@@ -11,7 +11,7 @@ import java.util.Locale;
 
 public class MainActivity extends Activity {
 
-    enum Screen { MAIN, DETAILS, QR, SERVICES, JOBS, MENU }
+    enum Screen { LOGIN, MAIN, DETAILS, QR, SERVICES, JOBS, MENU }
 
     DemoView demo;
 
@@ -45,12 +45,14 @@ public class MainActivity extends Activity {
         final Paint stroke=new Paint(Paint.ANTI_ALIAS_FLAG);
         final Typeface regular=Typeface.create("sans-serif",Typeface.NORMAL);
         final Typeface medium=Typeface.create("sans-serif-medium",Typeface.NORMAL);
+        final Typeface mid=Typeface.create(regular,450,false);
         final Typeface condensed=Typeface.create("sans-serif-condensed",Typeface.NORMAL);
         final Typeface condensedMedium=Typeface.create("sans-serif-condensed",Typeface.BOLD);
         final Path path=new Path();
         final Bitmap trident;
+        final Bitmap titleRef;
 
-        Screen current=Screen.MAIN, from=Screen.MAIN, to=Screen.MAIN;
+        Screen current=Screen.LOGIN, from=Screen.LOGIN, to=Screen.LOGIN;
         float transition=1f;
         int direction=1;
         ValueAnimator animator;
@@ -64,12 +66,15 @@ public class MainActivity extends Activity {
         boolean sheetOpen=false;
         float sheetProgress=0f;
         ValueAnimator sheetAnimator;
+        int enteredDigits=0;
 
         DemoView() {
             super(MainActivity.this);
             setLayerType(View.LAYER_TYPE_SOFTWARE,null);
-            byte[] iconBytes=Base64.decode("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",Base64.DEFAULT);
-            trident=BitmapFactory.decodeByteArray(iconBytes,0,iconBytes.length);
+            byte[] tridentBytes=Base64.decode("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",Base64.DEFAULT);
+            trident=BitmapFactory.decodeByteArray(tridentBytes,0,tridentBytes.length);
+            byte[] titleBytes=Base64.decode("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",Base64.DEFAULT);
+            titleRef=BitmapFactory.decodeByteArray(titleBytes,0,titleBytes.length);
             stroke.setStyle(Paint.Style.STROKE);
             stroke.setStrokeWidth(1.5f);
             stroke.setColor(LINE);
@@ -108,6 +113,7 @@ public class MainActivity extends Activity {
             int sc=c.saveLayerAlpha(0,0,W,H,alpha);
             p.setStyle(Paint.Style.FILL); p.setColor(BG); c.drawRect(0,0,W,H,p);
             switch(s) {
+                case LOGIN: drawLogin(c); break;
                 case MAIN: drawMain(c); break;
                 case DETAILS: drawDetails(c); break;
                 case QR: drawQr(c); break;
@@ -156,6 +162,48 @@ public class MainActivity extends Activity {
             // bell
             p.setStyle(Paint.Style.FILL);p.setColor(Color.BLACK);
             c.drawOval(607,164,628,187,p); c.drawRect(606,177,629,187,p); c.drawCircle(618,191,3,p);
+        }
+
+        void drawLogin(Canvas c){
+            text(c,"Код для входу",40,205,50,Color.BLACK,regular);
+
+            float[] dx={252,312,372,432};
+            for(int i=0;i<4;i++){
+                p.setStyle(Paint.Style.FILL);
+                p.setColor(Color.WHITE);
+                c.drawCircle(dx[i],438,10,p);
+                if(i<enteredDigits){
+                    p.setColor(Color.BLACK);
+                    c.drawCircle(dx[i],438,4.5f,p);
+                }
+            }
+
+            float[] xs={151,342,532};
+            float[] ys={737,912,1087};
+            int n=1;
+            for(int r=0;r<3;r++){
+                for(int col=0;col<3;col++){
+                    p.setColor(Color.WHITE);p.setStyle(Paint.Style.FILL);c.drawCircle(xs[col],ys[r],72,p);
+                    textCentered(c,String.valueOf(n++),xs[col],ys[r]+22,56,Color.BLACK,regular);
+                }
+            }
+            p.setColor(Color.WHITE);c.drawCircle(342,1262,72,p);
+            textCentered(c,"0",342,1284,56,Color.BLACK,regular);
+
+            Path back=new Path();
+            back.moveTo(525,1238); back.lineTo(565,1238);
+            back.quadTo(572,1238,572,1247);
+            back.lineTo(572,1277);
+            back.quadTo(572,1286,563,1286);
+            back.lineTo(525,1286);
+            back.lineTo(502,1262);
+            back.close();
+            p.setColor(Color.WHITE);c.drawPath(back,p);
+            p.setStyle(Paint.Style.STROKE);p.setStrokeWidth(4);p.setStrokeCap(Paint.Cap.ROUND);p.setColor(Color.BLACK);
+            c.drawLine(531,1252,550,1271,p); c.drawLine(550,1252,531,1271,p);
+            p.setStyle(Paint.Style.FILL);
+
+            textCentered(c,"Не пам’ятаю код для входу",342,1414,30,Color.BLACK,regular);
         }
 
         void drawMain(Canvas c){
@@ -219,7 +267,7 @@ public class MainActivity extends Activity {
             c.save();
             c.translate(0,-detailsScroll);
 
-            text(c,"Резерв ID",42,263,50,Color.BLACK,medium);
+            text(c,"Резерв ID",42,263,50,Color.BLACK,mid);
             drawReferenceTrident(c,579,210,59,70);
             drawTicker(c,0,319,684,361);
 
@@ -393,11 +441,12 @@ public class MainActivity extends Activity {
         }
 
         void drawReferenceTitle(Canvas c,float x,float y,float w,float h){
-            // Tuned against the user's 684x1536 reference: slightly narrower and lighter than Android default.
-            c.save();
-            c.scale(0.955f,1f,x,y);
-            text(c,"Резерв ID",x,y+31,39,Color.BLACK,medium);
-            c.restore();
+            if(titleRef==null) return;
+            Rect src=new Rect(0,0,titleRef.getWidth(),titleRef.getHeight());
+            RectF dst=new RectF(x-3,y-4,x-3+210,y-4+50);
+            p.setFilterBitmap(true);
+            c.drawBitmap(titleRef,src,dst,p);
+            p.setFilterBitmap(false);
         }
 
         void drawReferenceTrident(Canvas c,float x,float y,float w,float h){
@@ -419,7 +468,7 @@ public class MainActivity extends Activity {
             p.setStyle(Paint.Style.FILL);p.setTypeface(tf);p.setTextSize(size);p.setTextScaleX(1f);p.setColor(color);p.setStrokeWidth(1);c.drawText(s,x,base,p);
         }
         void textFio(Canvas c,String s,float x,float base,float size){
-            p.setStyle(Paint.Style.FILL);p.setTypeface(medium);p.setTextSize(size);p.setTextScaleX(1.045f);p.setColor(Color.BLACK);p.setStrokeWidth(1);
+            p.setStyle(Paint.Style.FILL);p.setTypeface(mid);p.setTextSize(size);p.setTextScaleX(1.055f);p.setColor(Color.BLACK);p.setStrokeWidth(1);
             c.drawText(s,x,base,p);
             p.setTextScaleX(1f);
         }
@@ -447,6 +496,7 @@ public class MainActivity extends Activity {
         }
 
         int order(Screen s){
+            if(s==Screen.LOGIN)return -1;
             if(s==Screen.SERVICES)return 1;if(s==Screen.JOBS)return 2;if(s==Screen.MENU)return 3;return 0;
         }
 
@@ -543,6 +593,7 @@ public class MainActivity extends Activity {
         }
 
         boolean goBack(){
+            if(current==Screen.LOGIN)return false;
             if(sheetOpen || sheetProgress>0.01f){setSheet(false);return true;}
             if(current!=Screen.MAIN){switchTo(Screen.MAIN);return true;}
             return false;
@@ -571,6 +622,35 @@ public class MainActivity extends Activity {
             }
             if(e.getAction()==MotionEvent.ACTION_UP){
                 if(dragging)return true;
+
+                if(current==Screen.LOGIN){
+                    int digit=-1;
+                    float[] kx={151,342,532};
+                    float[] ky={737,912,1087};
+                    int val=1;
+                    for(int r=0;r<3;r++){
+                        for(int col=0;col<3;col++){
+                            float ddx=x-kx[col], ddy=y-ky[r];
+                            if(ddx*ddx+ddy*ddy<82*82) digit=val;
+                            val++;
+                        }
+                    }
+                    float ddx=x-342, ddy=y-1262;
+                    if(ddx*ddx+ddy*ddy<82*82) digit=0;
+                    if(x>495&&x<590&&y>1215&&y<1310){
+                        if(enteredDigits>0) enteredDigits--;
+                        invalidate(); return true;
+                    }
+                    if(digit>=0){
+                        if(enteredDigits<4) enteredDigits++;
+                        invalidate();
+                        if(enteredDigits>=4){
+                            postDelayed(()->{enteredDigits=0; switchTo(Screen.MAIN);},180);
+                        }
+                        return true;
+                    }
+                    return true;
+                }
 
                 if(current==Screen.MAIN && (sheetOpen || sheetProgress>0.01f)){
                     float top=1070f;
