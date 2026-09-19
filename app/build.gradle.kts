@@ -8,7 +8,7 @@ android {
         applicationId = "com.example.oblikdemo"
         minSdk = 26
         targetSdk = 34
-        versionCode = 13
-        versionName = "1.2-demo"
+        versionCode = 14
+        versionName = "1.3-demo"
     }
 }
