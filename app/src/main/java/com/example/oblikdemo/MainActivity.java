@@ -267,9 +267,10 @@ public class MainActivity extends Activity {
             c.save();
             c.translate(0,-detailsScroll);
 
-            text(c,"Резерв ID",42,263,50,Color.BLACK,mid);
+            text(c,"Резерв ID",42,263,50,Color.BLACK,regular);
             drawReferenceTrident(c,579,210,59,70);
             drawTicker(c,0,319,684,361);
+            textCentered(c,"ДЕМО • ТЕСТОВІ ДАНІ",342,389,16,MUTED,medium);
 
             round(c,40,402,644,817,26,Color.WHITE);
             textFio(c,"ТЕЛЬНИХ",67,462,37);
@@ -283,8 +284,8 @@ public class MainActivity extends Activity {
 
             round(c,40,830,644,1429,26,Color.WHITE);
             text(c,"ТЦК та СП:",67,881,26,Color.BLACK,medium);
-            text(c,"Демонстраційний районний у місті",67,922,24,Color.BLACK,regular);
-            text(c,"Дніпро ТЦК та СП",67,949,24,Color.BLACK,regular);
+            text(c,"Демонстраційний районний ТЦК та СП",67,922,24,Color.BLACK,regular);
+            text(c,"(тестові дані)",67,949,22,MUTED,regular);
             line(c,40,981,644,981,Color.rgb(225,223,214),1);
             text(c,"Звання",67,1031,25,Color.BLACK,regular);
             text(c,"Солдат",397,1031,25,Color.BLACK,regular);
@@ -441,12 +442,16 @@ public class MainActivity extends Activity {
         }
 
         void drawReferenceTitle(Canvas c,float x,float y,float w,float h){
-            if(titleRef==null) return;
-            Rect src=new Rect(0,0,titleRef.getWidth(),titleRef.getHeight());
-            RectF dst=new RectF(x-3,y-4,x-3+210,y-4+50);
-            p.setFilterBitmap(true);
-            c.drawBitmap(titleRef,src,dst,p);
-            p.setFilterBitmap(false);
+            p.setSubpixelText(true);
+            p.setLinearText(true);
+            p.setStyle(Paint.Style.FILL);
+            p.setTypeface(Typeface.create("sans-serif",400,false));
+            p.setTextSize(39);
+            p.setTextScaleX(0.985f);
+            p.setColor(Color.BLACK);
+            c.drawText("Резерв ID",x,y+31,p);
+            p.setTextScaleX(1f);
+            p.setLinearText(false);
         }
 
         void drawReferenceTrident(Canvas c,float x,float y,float w,float h){
@@ -468,7 +473,7 @@ public class MainActivity extends Activity {
             p.setStyle(Paint.Style.FILL);p.setTypeface(tf);p.setTextSize(size);p.setTextScaleX(1f);p.setColor(color);p.setStrokeWidth(1);c.drawText(s,x,base,p);
         }
         void textFio(Canvas c,String s,float x,float base,float size){
-            p.setStyle(Paint.Style.FILL);p.setTypeface(mid);p.setTextSize(size);p.setTextScaleX(1.055f);p.setColor(Color.BLACK);p.setStrokeWidth(1);
+            p.setStyle(Paint.Style.FILL);p.setTypeface(Typeface.create("sans-serif",425,false));p.setTextSize(size);p.setTextScaleX(1.045f);p.setColor(Color.BLACK);p.setStrokeWidth(1);
             c.drawText(s,x,base,p);
             p.setTextScaleX(1f);
         }
