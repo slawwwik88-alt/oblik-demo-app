@@ -46,6 +46,7 @@ public class MainActivity extends Activity {
         final Typeface regular=Typeface.create("sans-serif",Typeface.NORMAL);
         final Typeface medium=Typeface.create("sans-serif-medium",Typeface.NORMAL);
         final Typeface mid=Typeface.create(regular,450,false);
+        final Typeface midLight=Typeface.create(regular,425,false);
         final Typeface condensed=Typeface.create("sans-serif-condensed",Typeface.NORMAL);
         final Typeface condensedMedium=Typeface.create("sans-serif-condensed",Typeface.BOLD);
         final Path path=new Path();
@@ -445,7 +446,7 @@ public class MainActivity extends Activity {
             p.setSubpixelText(true);
             p.setLinearText(true);
             p.setStyle(Paint.Style.FILL);
-            p.setTypeface(Typeface.create("sans-serif",400,false));
+            p.setTypeface(regular);
             p.setTextSize(39);
             p.setTextScaleX(0.985f);
             p.setColor(Color.BLACK);
@@ -473,7 +474,7 @@ public class MainActivity extends Activity {
             p.setStyle(Paint.Style.FILL);p.setTypeface(tf);p.setTextSize(size);p.setTextScaleX(1f);p.setColor(color);p.setStrokeWidth(1);c.drawText(s,x,base,p);
         }
         void textFio(Canvas c,String s,float x,float base,float size){
-            p.setStyle(Paint.Style.FILL);p.setTypeface(Typeface.create("sans-serif",425,false));p.setTextSize(size);p.setTextScaleX(1.045f);p.setColor(Color.BLACK);p.setStrokeWidth(1);
+            p.setStyle(Paint.Style.FILL);p.setTypeface(midLight);p.setTextSize(size);p.setTextScaleX(1.045f);p.setColor(Color.BLACK);p.setStrokeWidth(1);
             c.drawText(s,x,base,p);
             p.setTextScaleX(1f);
         }
