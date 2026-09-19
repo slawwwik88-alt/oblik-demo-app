@@ -17,15 +17,11 @@ public class MainActivity extends Activity {
 
     @Override public void onCreate(Bundle b) {
         super.onCreate(b);
-        getWindow().setStatusBarColor(Color.TRANSPARENT);
-        getWindow().setNavigationBarColor(Color.TRANSPARENT);
+        getWindow().setStatusBarColor(Color.rgb(225,222,203));
+        getWindow().setNavigationBarColor(Color.WHITE);
         getWindow().getDecorView().setSystemUiVisibility(
-            View.SYSTEM_UI_FLAG_FULLSCREEN |
-            View.SYSTEM_UI_FLAG_HIDE_NAVIGATION |
-            View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY |
-            View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN |
-            View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION |
-            View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+            View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR |
+            View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR
         );
         demo = new DemoView();
         setContentView(demo);
@@ -38,12 +34,13 @@ public class MainActivity extends Activity {
 
     final class DemoView extends View {
         static final float W=684f,H=1536f;
-        final int BG=Color.rgb(231,228,210);
-        final int CARD=Color.rgb(226,223,204);
+        static final float TOP_INSET=80f, BOTTOM_INSET=40f, CONTENT_H=H-TOP_INSET-BOTTOM_INSET;
+        final int BG=Color.rgb(225,222,203);
+        final int CARD=Color.rgb(213,211,190);
         final int MUTED=Color.rgb(95,95,87);
-        final int LINE=Color.rgb(151,149,135);
-        final int TICKER=Color.rgb(119,84,25);
-        final int ORANGE=Color.rgb(255,137,0);
+        final int LINE=Color.rgb(151,148,131);
+        final int TICKER=Color.rgb(107,75,26);
+        final int ORANGE=Color.rgb(255,136,8);
         final Paint p=new Paint(Paint.ANTI_ALIAS_FLAG);
         final Paint stroke=new Paint(Paint.ANTI_ALIAS_FLAG);
         final Typeface regular=Typeface.create("sans-serif",Typeface.NORMAL);
@@ -76,19 +73,20 @@ public class MainActivity extends Activity {
         }
 
         float sx(){return getWidth()/W;}
-        float sy(){return getHeight()/H;}
+        float sy(){return getHeight()/CONTENT_H;}
 
         @Override protected void onDraw(Canvas real) {
             super.onDraw(real);
             long now=System.nanoTime();
             if(lastFrameNs!=0L){
                 float dt=Math.min(.05f,(now-lastFrameNs)/1_000_000_000f);
-                tickerOffset=(tickerOffset+70f*dt)%100000f;
+                tickerOffset=(tickerOffset+24f*dt)%100000f;
             }
             lastFrameNs=now;
 
             real.save();
             real.scale(sx(),sy());
+            real.translate(0,-TOP_INSET);
 
             if (transition >= .999f) {
                 drawScreen(real,current,255,0);
@@ -106,7 +104,6 @@ public class MainActivity extends Activity {
             c.translate(dx,0);
             int sc=c.saveLayerAlpha(0,0,W,H,alpha);
             p.setStyle(Paint.Style.FILL); p.setColor(BG); c.drawRect(0,0,W,H,p);
-            drawStatus(c);
             switch(s) {
                 case MAIN: drawMain(c); break;
                 case DETAILS: drawDetails(c); break;
@@ -183,9 +180,9 @@ public class MainActivity extends Activity {
 
             text(c,"Військовозобов’язаний",67,1045,25,MUTED,regular);
             // Reference screenshot uses a normal-width sans face, not condensed.
-            text(c,"ТЕЛЬНИХ",67,1098,39,Color.BLACK,regular);
-            text(c,"СВЯТОСЛАВ",67,1137,39,Color.BLACK,regular);
-            text(c,"Олександрович",67,1177,39,Color.BLACK,regular);
+            textFio(c,"ТЕЛЬНИХ",67,1098,39);
+            textFio(c,"СВЯТОСЛАВ",67,1137,39);
+            textFio(c,"Олександрович",67,1177,39);
 
             p.setColor(ORANGE);p.setStyle(Paint.Style.FILL);c.drawCircle(583,1150,33,p);
             p.setStrokeWidth(4);p.setStrokeCap(Paint.Cap.SQUARE);p.setColor(Color.BLACK);
@@ -201,7 +198,7 @@ public class MainActivity extends Activity {
         void drawTicker(Canvas c,float l,float t,float r,float b){
             p.setStyle(Paint.Style.FILL);p.setColor(TICKER);c.drawRect(l,t,r,b,p);
             c.save();c.clipRect(l,t,r,b);
-            String s="DEMO • Оновлено о 15:47 | 17.09.2026 • Документ не є офіційним • ";
+            String s="Документ оновлено о 15:47 | 17.09.2026 • ";
             p.setTypeface(medium);p.setTextSize(20);p.setColor(Color.WHITE);
             float sw=p.measureText(s), off=-(tickerOffset%sw);
             c.drawText(s,off,t+29,p);c.drawText(s,off+sw,t+29,p);c.drawText(s,off+2*sw,t+29,p);
@@ -223,9 +220,9 @@ public class MainActivity extends Activity {
             drawTicker(c,0,319,684,361);
 
             round(c,40,401,644,817,26,Color.WHITE);
-            text(c,"ТЕЛЬНИХ",67,462,37,Color.BLACK,regular);
-            text(c,"СВЯТОСЛАВ",67,502,37,Color.BLACK,regular);
-            text(c,"Олександрович",67,542,37,Color.BLACK,regular);
+            textFio(c,"ТЕЛЬНИХ",67,462,37);
+            textFio(c,"СВЯТОСЛАВ",67,502,37);
+            textFio(c,"Олександрович",67,542,37);
             text(c,"Військовозобов’язаний",67,598,27,Color.BLACK,medium);
             text(c,"Дата народження:",67,650,27,Color.BLACK,medium);
             text(c,"10.08.1993",67,693,27,Color.BLACK,regular);
@@ -357,7 +354,7 @@ public class MainActivity extends Activity {
         }
 
         void drawBottom(Canvas c,Screen active){
-            p.setStyle(Paint.Style.FILL);p.setColor(Color.WHITE);c.drawRect(0,1363,W,H,p);
+            p.setStyle(Paint.Style.FILL);p.setColor(Color.WHITE);c.drawRect(0,1363,W,1496,p);
             float[] cx={81,253,429,603};
             String[] labs={"Резерв ID","Сервіси","Вакансії","Меню"};
             Screen[] ss={Screen.MAIN,Screen.SERVICES,Screen.JOBS,Screen.MENU};
@@ -366,7 +363,7 @@ public class MainActivity extends Activity {
                 drawNavIcon(c,cx[i],1414,i,a);
                 textCentered(c,labs[i],cx[i],1466,22,Color.BLACK,a?medium:regular);
             }
-            round(c,252,1514,432,1520,3,Color.rgb(96,96,96));
+
         }
 
         void drawNavIcon(Canvas c,float cx,float cy,int type,boolean active){
@@ -404,10 +401,15 @@ public class MainActivity extends Activity {
         }
 
         void text(Canvas c,String s,float x,float base,float size,int color,Typeface tf){
-            p.setStyle(Paint.Style.FILL);p.setTypeface(tf);p.setTextSize(size);p.setColor(color);p.setStrokeWidth(1);c.drawText(s,x,base,p);
+            p.setStyle(Paint.Style.FILL);p.setTypeface(tf);p.setTextSize(size);p.setTextScaleX(1f);p.setColor(color);p.setStrokeWidth(1);c.drawText(s,x,base,p);
+        }
+        void textFio(Canvas c,String s,float x,float base,float size){
+            p.setStyle(Paint.Style.FILL);p.setTypeface(regular);p.setTextSize(size);p.setTextScaleX(1.065f);p.setColor(Color.BLACK);p.setStrokeWidth(1);
+            c.drawText(s,x,base,p);
+            p.setTextScaleX(1f);
         }
         void textCentered(Canvas c,String s,float x,float base,float size,int color,Typeface tf){
-            p.setTypeface(tf);p.setTextSize(size);p.setColor(color);p.setStyle(Paint.Style.FILL);
+            p.setTypeface(tf);p.setTextSize(size);p.setTextScaleX(1f);p.setColor(color);p.setStyle(Paint.Style.FILL);
             c.drawText(s,x-p.measureText(s)/2f,base,p);
         }
         void round(Canvas c,float l,float t,float r,float b,float rad,int color){
@@ -476,7 +478,7 @@ public class MainActivity extends Activity {
         }
 
         @Override public boolean onTouchEvent(android.view.MotionEvent e){
-            float x=e.getX()/sx(), y=e.getY()/sy();
+            float x=e.getX()/sx(), y=e.getY()/sy()+TOP_INSET;
             if(e.getAction()==MotionEvent.ACTION_DOWN){
                 downX=x;downY=y;lastY=y;dragging=false;return true;
             }
