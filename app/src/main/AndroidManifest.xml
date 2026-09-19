@@ -1,7 +1,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <application
         android:theme="@style/AppTheme"
-        android:label="Резерв DEMO+"\n        android:icon="@drawable/ic_launcher_demo"\n        android:roundIcon="@drawable/ic_launcher_demo"
+        android:label="Резерв DEMO+"
+        android:icon="@drawable/ic_launcher_demo"
+        android:roundIcon="@drawable/ic_launcher_demo"
         android:allowBackup="false"
         android:supportsRtl="true">
         <activity
