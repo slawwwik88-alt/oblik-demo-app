@@ -262,7 +262,7 @@ public class MainActivity extends Activity {
         void drawDetails(Canvas c){
             // dim background above the sheet
             p.setColor(Color.rgb(160,159,148));p.setStyle(Paint.Style.FILL);c.drawRect(0,0,W,112,p);
-            p.setColor(BG);c.drawRoundRect(0,110,W,1600,38,38,p);
+            p.setColor(BG);c.drawRoundRect(0,110,W,1965,38,38,p);
             round(c,309,136,376,143,4,Color.BLACK);
             drawDemoPill(c,158);
 
@@ -299,9 +299,21 @@ public class MainActivity extends Activity {
             text(c,"Номер в реєстрі Оберіг:",67,1344,24,Color.BLACK,medium);
             text(c,"DEMO-150420211425480200009",67,1387,24,Color.BLACK,regular);
 
-            round(c,40,1443,644,1605,26,Color.WHITE);
+            round(c,40,1443,644,1765,26,Color.WHITE);
             text(c,"Телефон:",67,1493,26,Color.BLACK,medium);
             text(c,"+380 00 000 2549",67,1535,25,Color.BLACK,regular);
+
+            text(c,"Email:",67,1591,26,Color.BLACK,medium);
+            text(c,"DEMO@EXAMPLE.COM",67,1633,25,Color.BLACK,regular);
+
+            text(c,"Адреса проживання:",67,1688,26,Color.BLACK,medium);
+            text(c,"Україна, Дніпропетровська область, м Дніпро,",67,1728,23,Color.BLACK,regular);
+            text(c,"вул. Демонстраційна, б. 82",67,1756,23,Color.BLACK,regular);
+
+            round(c,40,1784,644,1897,26,Color.WHITE);
+            text(c,"Дата останнього",67,1830,25,Color.BLACK,medium);
+            text(c,"уточнення даних:",67,1859,25,Color.BLACK,medium);
+            text(c,"09.03.2026",397,1847,25,Color.BLACK,regular);
 
             c.restore();
         }
@@ -623,7 +635,7 @@ public class MainActivity extends Activity {
                 if(current==Screen.DETAILS){
                     float dy=y-lastY;
                     if(Math.abs(y-downY)>8)dragging=true;
-                    detailsScroll=Math.max(0,Math.min(260,detailsScroll-dy));
+                    detailsScroll=Math.max(0,Math.min(620,detailsScroll-dy));
                     lastY=y;invalidate();
                 }
                 return true;
