@@ -47,6 +47,7 @@ public class MainActivity extends Activity {
         final Typeface medium=Typeface.create("sans-serif-medium",Typeface.NORMAL);
         final Typeface mid=Typeface.create(regular,450,false);
         final Typeface midLight=Typeface.create(regular,425,false);
+        final Typeface titleFace=Typeface.create(regular,480,false);
         final Typeface condensed=Typeface.create("sans-serif-condensed",Typeface.NORMAL);
         final Typeface condensedMedium=Typeface.create("sans-serif-condensed",Typeface.BOLD);
         final Path path=new Path();
@@ -224,7 +225,7 @@ public class MainActivity extends Activity {
             roundStroke(c,40,357,644,1211,12,CARD,LINE,1.6f);
 
             drawReferenceTitle(c,67,401,190,45);
-            drawReferenceTrident(c,560,395,55,65);
+            drawReferenceTrident(c,548,386,74,88);
 
             text(c,"Дата народження:",67,499,25,MUTED,regular);
             text(c,"10.08.1993",67,536,29,Color.BLACK,regular);
@@ -269,10 +270,8 @@ public class MainActivity extends Activity {
             c.translate(0,-detailsScroll);
 
             text(c,"Резерв ID",42,263,50,Color.BLACK,regular);
-            drawReferenceTrident(c,579,210,59,70);
+            drawReferenceTrident(c,566,198,78,93);
             drawTicker(c,0,319,684,361);
-            textCentered(c,"ДЕМО • ТЕСТОВІ ДАНІ",342,389,16,MUTED,medium);
-
             round(c,40,402,644,817,26,Color.WHITE);
             textFio(c,"ТЕЛЬНИХ",67,462,37);
             textFio(c,"СВЯТОСЛАВ",67,502,37);
@@ -285,24 +284,24 @@ public class MainActivity extends Activity {
 
             round(c,40,830,644,1429,26,Color.WHITE);
             text(c,"ТЦК та СП:",67,881,26,Color.BLACK,medium);
-            text(c,"Демонстраційний районний ТЦК та СП",67,922,24,Color.BLACK,regular);
-            text(c,"(тестові дані)",67,949,22,MUTED,regular);
+            text(c,"Індустріальний районний у місті Дніпро",67,922,24,Color.BLACK,regular);
+            text(c,"ТЦК та СП",67,949,24,Color.BLACK,regular);
             line(c,40,981,644,981,Color.rgb(225,223,214),1);
             text(c,"Звання",67,1031,25,Color.BLACK,regular);
             text(c,"Солдат",397,1031,25,Color.BLACK,regular);
             text(c,"ВОС:",67,1083,25,Color.BLACK,regular);
-            text(c,"000000",397,1083,25,Color.BLACK,regular);
+            text(c,"999097",397,1083,25,Color.BLACK,regular);
             text(c,"Категорія обліку:",67,1139,25,Color.BLACK,regular);
             text(c,"Військовозобов’язаний",67,1181,25,Color.BLACK,regular);
             text(c,"Потребує проходження базової",67,1235,23,Color.BLACK,regular);
-            text(c,"загальновійськової підготовки, Солдат",67,1264,23,Color.BLACK,regular);
+            text(c,"загальновійськової підготовки,Солдат",67,1264,23,Color.BLACK,regular);
             text(c,"резерву",67,1293,23,Color.BLACK,regular);
             text(c,"Номер в реєстрі Оберіг:",67,1344,24,Color.BLACK,medium);
-            text(c,"DEMO-000000000000",67,1387,24,Color.BLACK,regular);
+            text(c,"DEMO-000000000000000000000",67,1387,24,Color.BLACK,regular);
 
             round(c,40,1443,644,1605,26,Color.WHITE);
             text(c,"Телефон:",67,1493,26,Color.BLACK,medium);
-            text(c,"+380 00 000 00 00",67,1535,25,Color.BLACK,regular);
+            text(c,"+380 00 000 0000",67,1535,25,Color.BLACK,regular);
 
             c.restore();
         }
@@ -446,11 +445,14 @@ public class MainActivity extends Activity {
             p.setSubpixelText(true);
             p.setLinearText(true);
             p.setStyle(Paint.Style.FILL);
-            p.setTypeface(regular);
+            p.setTypeface(titleFace);
             p.setTextSize(39);
             p.setTextScaleX(0.985f);
             p.setColor(Color.BLACK);
-            c.drawText("Резерв ID",x,y+31,p);
+            c.save();
+            c.scale(1f,0.80f,x,y+31f);
+            c.drawText("Резерв ID",x,y+31f,p);
+            c.restore();
             p.setTextScaleX(1f);
             p.setLinearText(false);
         }
