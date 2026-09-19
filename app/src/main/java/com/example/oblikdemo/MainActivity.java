@@ -61,6 +61,9 @@ public class MainActivity extends Activity {
         float cardFlip=0f;
         boolean cardFlipped=false;
         ValueAnimator cardAnimator;
+        boolean sheetOpen=false;
+        float sheetProgress=0f;
+        ValueAnimator sheetAnimator;
 
         DemoView() {
             super(MainActivity.this);
@@ -80,7 +83,7 @@ public class MainActivity extends Activity {
             long now=System.nanoTime();
             if(lastFrameNs!=0L){
                 float dt=Math.min(.05f,(now-lastFrameNs)/1_000_000_000f);
-                tickerOffset=(tickerOffset+24f*dt)%100000f;
+                tickerOffset=(tickerOffset+29f*dt)%100000f;
             }
             lastFrameNs=now;
 
@@ -165,13 +168,14 @@ public class MainActivity extends Activity {
             c.restore();
 
             drawBottom(c,Screen.MAIN);
+            if(sheetProgress>0.001f) drawActionSheet(c);
         }
 
         void drawMainFront(Canvas c){
             roundStroke(c,40,357,644,1211,12,CARD,LINE,1.6f);
 
-            text(c,"Резерв ID",68,431,39,Color.BLACK,regular);
-            drawTrident(c,560,395,55,65);
+            drawReferenceTitle(c,67,401,190,45);
+            drawReferenceTrident(c,560,395,55,65);
 
             text(c,"Дата народження:",67,499,25,MUTED,regular);
             text(c,"10.08.1993",67,536,29,Color.BLACK,regular);
@@ -199,9 +203,9 @@ public class MainActivity extends Activity {
             p.setStyle(Paint.Style.FILL);p.setColor(TICKER);c.drawRect(l,t,r,b,p);
             c.save();c.clipRect(l,t,r,b);
             String s="Документ оновлено о 15:47 | 17.09.2026 • ";
-            p.setTypeface(medium);p.setTextSize(20);p.setColor(Color.WHITE);
+            p.setTypeface(Typeface.create("sans-serif-medium",Typeface.BOLD));p.setTextSize(22);p.setTextScaleX(1.01f);p.setColor(Color.WHITE);
             float sw=p.measureText(s), off=-(tickerOffset%sw);
-            c.drawText(s,off,t+29,p);c.drawText(s,off+sw,t+29,p);c.drawText(s,off+2*sw,t+29,p);
+            c.drawText(s,off,t+30,p);c.drawText(s,off+sw,t+30,p);c.drawText(s,off+2*sw,t+30,p);p.setTextScaleX(1f);
             c.restore();
         }
 
@@ -216,7 +220,7 @@ public class MainActivity extends Activity {
             c.translate(0,-detailsScroll);
 
             text(c,"Резерв ID",42,263,50,Color.BLACK,regular);
-            drawTrident(c,579,210,59,70);
+            drawReferenceTrident(c,579,210,59,70);
             drawTicker(c,0,319,684,361);
 
             round(c,40,401,644,817,26,Color.WHITE);
@@ -387,12 +391,35 @@ public class MainActivity extends Activity {
             }
         }
 
-        void drawTrident(Canvas c,float x,float y,float w,float h){
-            if(trident==null) return;
-            Rect src=new Rect(0,0,trident.getWidth(),trident.getHeight());
-            RectF dst=new RectF(x,y,x+w,y+h);
-            p.setAlpha(255);
-            c.drawBitmap(trident,src,dst,p);
+        void drawReferenceTitle(Canvas c,float x,float y,float w,float h){
+            // Tuned against the user's 684x1536 reference: slightly narrower and lighter than Android default.
+            c.save();
+            c.scale(0.945f,1f,x,y);
+            text(c,"Резерв ID",x,y+31,39,Color.BLACK,regular);
+            c.restore();
+        }
+
+        void drawReferenceTrident(Canvas c,float x,float y,float w,float h){
+            // Shield + trident proportions traced from the supplied screenshot.
+            Path sh=new Path();
+            sh.moveTo(x,y); sh.lineTo(x+w,y); sh.lineTo(x+w,y+h*.63f);
+            sh.quadTo(x+w*.92f,y+h*.82f,x+w*.50f,y+h);
+            sh.quadTo(x+w*.08f,y+h*.82f,x,y+h*.63f); sh.close();
+            p.setStyle(Paint.Style.FILL); p.setColor(Color.BLACK); c.drawPath(sh,p);
+
+            p.setColor(Color.rgb(225,222,203));
+            p.setStyle(Paint.Style.STROKE); p.setStrokeWidth(5.2f); p.setStrokeCap(Paint.Cap.ROUND); p.setStrokeJoin(Paint.Join.ROUND);
+            float cx=x+w*.5f;
+            Path t=new Path();
+            t.moveTo(cx,y+h*.72f); t.lineTo(cx,y+h*.27f);
+            t.moveTo(cx,y+h*.39f); t.cubicTo(cx-w*.13f,y+h*.31f,cx-w*.18f,y+h*.22f,cx-w*.18f,y+h*.10f);
+            t.moveTo(cx,y+h*.39f); t.cubicTo(cx+w*.13f,y+h*.31f,cx+w*.18f,y+h*.22f,cx+w*.18f,y+h*.10f);
+            t.moveTo(cx-w*.18f,y+h*.10f); t.lineTo(cx-w*.18f,y+h*.58f);
+            t.moveTo(cx+w*.18f,y+h*.10f); t.lineTo(cx+w*.18f,y+h*.58f);
+            t.moveTo(cx-w*.18f,y+h*.58f); t.quadTo(cx-w*.08f,y+h*.67f,cx,y+h*.72f);
+            t.moveTo(cx+w*.18f,y+h*.58f); t.quadTo(cx+w*.08f,y+h*.67f,cx,y+h*.72f);
+            c.drawPath(t,p);
+            p.setStyle(Paint.Style.FILL);
         }
 
         void drawChevron(Canvas c,float x,float y){
@@ -465,7 +492,70 @@ public class MainActivity extends Activity {
             cardAnimator.start();
         }
 
+        void setSheet(boolean open){
+            if(sheetAnimator!=null && sheetAnimator.isRunning()) sheetAnimator.cancel();
+            final float start=sheetProgress;
+            final float end=open?1f:0f;
+            sheetAnimator=ValueAnimator.ofFloat(start,end);
+            sheetAnimator.setDuration(240);
+            sheetAnimator.setInterpolator(new DecelerateInterpolator());
+            sheetAnimator.addUpdateListener(a->{sheetProgress=(float)a.getAnimatedValue();invalidate();});
+            sheetAnimator.addListener(new android.animation.AnimatorListenerAdapter(){
+                @Override public void onAnimationEnd(android.animation.Animator a){
+                    sheetProgress=end; sheetOpen=open; invalidate();
+                }
+            });
+            sheetAnimator.start();
+        }
+
+        void drawActionSheet(Canvas c){
+            int alpha=(int)(105*sheetProgress);
+            p.setStyle(Paint.Style.FILL); p.setColor(Color.argb(alpha,0,0,0));
+            c.drawRect(0,0,W,H,p);
+
+            float sheetTop=1070f + (1f-sheetProgress)*470f;
+            float bottom=1536f;
+            p.setColor(Color.WHITE);
+            RectF rr=new RectF(26,sheetTop,658,bottom);
+            c.drawRoundRect(rr,28,28,p);
+            // square off the lower corners like a bottom sheet
+            c.drawRect(26,sheetTop+28,658,bottom,p);
+
+            round(c,309,sheetTop+33,375,sheetTop+40,4,Color.BLACK);
+
+            drawInfoIcon(c,84,sheetTop+114);
+            text(c,"Переглянути документ",132,sheetTop+126,30,Color.BLACK,medium);
+
+            drawDocIcon(c,85,sheetTop+206);
+            text(c,"Завантажити PDF",132,sheetTop+218,30,Color.BLACK,medium);
+
+            drawRefreshIcon(c,85,sheetTop+303);
+            text(c,"Оновити документ",132,sheetTop+315,30,Color.BLACK,medium);
+        }
+
+        void drawInfoIcon(Canvas c,float x,float y){
+            strokeCircle(c,x,y,19,Color.BLACK,3);
+            textCentered(c,"i",x,y+9,28,Color.BLACK,medium);
+        }
+
+        void drawDocIcon(Canvas c,float x,float y){
+            p.setStyle(Paint.Style.STROKE);p.setStrokeWidth(3);p.setColor(Color.BLACK);
+            RectF r=new RectF(x-13,y-20,x+13,y+20);c.drawRoundRect(r,3,3,p);
+            c.drawLine(x+2,y-20,x+13,y-9,p); c.drawLine(x+2,y-20,x+2,y-9,p); c.drawLine(x+2,y-9,x+13,y-9,p);
+            c.drawLine(x-7,y+3,x+7,y+3,p); c.drawLine(x-7,y+10,x+7,y+10,p);
+        }
+
+        void drawRefreshIcon(Canvas c,float x,float y){
+            p.setStyle(Paint.Style.STROKE);p.setStrokeWidth(3);p.setColor(Color.BLACK);p.setStrokeCap(Paint.Cap.ROUND);
+            c.drawArc(x-17,y-17,x+17,y+17,35,245,false,p);
+            c.drawArc(x-17,y-17,x+17,y+17,215,145,false,p);
+            p.setStyle(Paint.Style.FILL);
+            Path a=new Path();a.moveTo(x+15,y-15);a.lineTo(x+19,y-3);a.lineTo(x+7,y-6);a.close();c.drawPath(a,p);
+            Path b=new Path();b.moveTo(x-15,y+15);b.lineTo(x-19,y+3);b.lineTo(x-7,y+6);b.close();c.drawPath(b,p);
+        }
+
         boolean goBack(){
+            if(sheetOpen || sheetProgress>0.01f){setSheet(false);return true;}
             if(current!=Screen.MAIN){switchTo(Screen.MAIN);return true;}
             return false;
         }
@@ -493,10 +583,20 @@ public class MainActivity extends Activity {
             }
             if(e.getAction()==MotionEvent.ACTION_UP){
                 if(dragging)return true;
+
+                if(current==Screen.MAIN && (sheetOpen || sheetProgress>0.01f)){
+                    float top=1070f;
+                    if(y<top){setSheet(false);return true;}
+                    if(y>top+70 && y<top+170){setSheet(false);switchTo(Screen.DETAILS);return true;}
+                    if(y>top+170 && y<top+270){return true;}
+                    if(y>top+270 && y<top+370){setSheet(false);tickerOffset=0;return true;}
+                    return true;
+                }
+
                 if(current!=Screen.DETAILS && y>1360){switchTo(navFor(x));return true;}
                 if(current==Screen.MAIN){
                     if(!cardFlipped && x>535&&x<635&&y>1090&&y<1215){
-                        switchTo(Screen.DETAILS);return true;
+                        setSheet(true);return true;
                     }
                     if(x>40&&x<644&&y>355&&y<1211){
                         animateCardFlip();return true;
