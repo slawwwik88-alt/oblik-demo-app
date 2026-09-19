@@ -10,6 +10,8 @@ import java.util.Locale;
 
 public class MainActivity extends Activity {
 
+    enum Screen { MAIN, DETAILS, QR, SERVICES, JOBS, MENU }
+
     DemoView demo;
 
     @Override public void onCreate(Bundle b) {
@@ -49,7 +51,6 @@ public class MainActivity extends Activity {
         final Typeface condensedMedium=Typeface.create("sans-serif-condensed",Typeface.BOLD);
         final Path path=new Path();
 
-        enum Screen { MAIN, DETAILS, QR, SERVICES, JOBS, MENU }
         Screen current=Screen.MAIN, from=Screen.MAIN, to=Screen.MAIN;
         float transition=1f;
         int direction=1;
