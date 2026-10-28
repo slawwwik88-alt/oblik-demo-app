@@ -54,7 +54,7 @@ public class MainActivity extends Activity {
         final Bitmap trident;
         final Bitmap titleRef;
 
-        Screen current=Screen.LOGIN, from=Screen.LOGIN, to=Screen.LOGIN;
+        Screen current=Screen.LOGIN;
         float transition=1f;
         int direction=1;
         ValueAnimator animator;
@@ -98,13 +98,9 @@ public class MainActivity extends Activity {
             real.scale(sx(),sy());
             real.translate(0,-TOP_INSET);
 
-            if (transition >= .999f) {
-                drawScreen(real,current,255,0);
-            } else {
-                // only the incoming page is drawn during navigation:
-                // this prevents duplicate bars/icons and the visual glitch.
-                drawScreen(real,to,255,direction*18f*(1-transition));
-            }
+            // Navigation selects the destination before the first frame.
+            // Progress only controls its position, never which screen is drawn.
+            drawScreen(real,current,255,direction*18f*(1-transition));
             real.restore();
             postInvalidateOnAnimation();
         }
@@ -522,12 +518,14 @@ public class MainActivity extends Activity {
 
         void switchTo(Screen s){
             if(s==current || (animator!=null&&animator.isRunning())) return;
-            from=current;to=s;direction=order(s)>=order(current)?1:-1;transition=0;
+            direction=order(s)>=order(current)?1:-1;
+            current=s;
+            transition=0;
             animator=ValueAnimator.ofFloat(0,1);
             animator.setDuration(230);animator.setInterpolator(new DecelerateInterpolator());
             animator.addUpdateListener(a->{transition=(float)a.getAnimatedValue();invalidate();});
             animator.addListener(new android.animation.AnimatorListenerAdapter(){
-                @Override public void onAnimationEnd(android.animation.Animator a){current=to;transition=1;invalidate();}
+                @Override public void onAnimationEnd(android.animation.Animator a){transition=1;invalidate();}
             });
             animator.start();
         }
@@ -613,6 +611,7 @@ public class MainActivity extends Activity {
         }
 
         boolean goBack(){
+            if(animator!=null && animator.isRunning())return true;
             if(current==Screen.LOGIN)return false;
             if(sheetOpen || sheetProgress>0.01f){setSheet(false);return true;}
             if(current!=Screen.MAIN){switchTo(Screen.MAIN);return true;}
@@ -627,6 +626,7 @@ public class MainActivity extends Activity {
         }
 
         @Override public boolean onTouchEvent(android.view.MotionEvent e){
+            if(animator!=null && animator.isRunning())return true;
             float x=e.getX()/sx(), y=e.getY()/sy()+TOP_INSET;
             if(e.getAction()==MotionEvent.ACTION_DOWN){
                 downX=x;downY=y;lastY=y;dragging=false;return true;
