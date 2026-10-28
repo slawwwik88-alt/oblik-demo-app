@@ -119,7 +119,7 @@ public class MainActivity extends Activity {
                 case JOBS: drawJobs(c); break;
                 case MENU: drawMenu(c); break;
             }
-            if (s!=Screen.DETAILS) drawDemoPill(c,92);
+            if (s!=Screen.DETAILS) drawDemoLabel(c,92);
             c.restoreToCount(sc);
             c.restore();
         }
@@ -148,10 +148,8 @@ public class MainActivity extends Activity {
             return f.format(new java.util.Date());
         }
 
-        void drawDemoPill(Canvas c,float y){
-            float x=260,w=164,h=36;
-            round(c,x,y,x+w,y+h,18,Color.rgb(45,43,38));
-            text(c,"DEMO • НЕ ДОКУМЕНТ",276,y+24,13,Color.WHITE,medium);
+        void drawDemoLabel(Canvas c,float y){
+            textCentered(c,"DEMO • НЕ ДОКУМЕНТ",342,y+24,13,MUTED,medium);
         }
 
         void drawNotification(Canvas c){
@@ -260,7 +258,7 @@ public class MainActivity extends Activity {
             p.setColor(Color.rgb(160,159,148));p.setStyle(Paint.Style.FILL);c.drawRect(0,0,W,112,p);
             p.setColor(BG);c.drawRoundRect(0,110,W,1965,38,38,p);
             round(c,309,136,376,143,4,Color.BLACK);
-            drawDemoPill(c,158);
+            drawDemoLabel(c,158);
 
             c.save();
             c.translate(0,-detailsScroll);
